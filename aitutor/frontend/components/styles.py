@@ -100,22 +100,26 @@ def 注入样式():
         color: var(--text-muted); text-transform: uppercase;
     }
 
-    /* 导航单选按钮——做成菜单样式 */
+    /* 导航菜单——宽间距卡片式 */
     [data-testid="stSidebar"] .stRadio > div[role="radiogroup"] {
-        display: flex; flex-direction: column; gap: 2px;
+        display: flex; flex-direction: column; gap: 6px;
     }
     [data-testid="stSidebar"] .stRadio label {
-        padding: 0.6rem 0.8rem !important; border-radius: var(--radius) !important;
+        padding: 0.7rem 0.9rem !important; border-radius: var(--radius) !important;
         margin: 0 !important; transition: all var(--transition);
-        border: 1px solid transparent;
+        border: 1px solid transparent; font-size: 0.9rem;
+        display: flex; align-items: center; gap: 0.4rem;
     }
     [data-testid="stSidebar"] .stRadio label:hover {
-        background: var(--bg-card) !important; border-color: var(--border);
+        background: var(--bg-card-hover) !important; border-color: var(--border);
     }
-    [data-testid="stSidebar"] .stRadio [data-checked="true"] + div,
+    /* 选中的样式——左侧琥珀色竖线 + 微光背景 */
     [data-testid="stSidebar"] .stRadio label:has(input:checked) {
-        background: var(--amber-soft) !important; border-color: var(--amber) !important;
+        background: linear-gradient(90deg, var(--amber-soft) 0%, transparent 100%) !important;
+        border: 1px solid var(--border-active) !important;
+        border-left: 3px solid var(--amber) !important;
         color: var(--amber) !important; font-weight: 600;
+        box-shadow: inset 0 0 20px var(--amber-soft);
     }
 
     /* ============ 标签页 (登录/注册) ============ */
