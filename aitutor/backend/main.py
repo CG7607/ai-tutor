@@ -1,0 +1,22 @@
+"""FastAPI entry point for AITutor."""
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI(
+    title="AITutor API",
+    description="基于多智能体协作的《人工智能导论》课程助教",
+    version="0.1.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/api/health")
+async def health_check():
+    return {"status": "ok", "service": "aitutor"}
