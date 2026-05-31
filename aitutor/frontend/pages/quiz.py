@@ -38,8 +38,8 @@ def render_quiz_page():
     """渲染自适应测验页面."""
     st.header("📝 自适应测验")
 
-    if not st.session_state.username:
-        st.info("👈 请先在左侧边栏输入用户名")
+    if not st.session_state.get("logged_in"):
+        st.info("👈 请先在左侧边栏登录或注册")
         return
 
     st.caption("基于布鲁姆认知目标分类的动态测验系统")

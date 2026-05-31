@@ -19,8 +19,8 @@ def render_chat_page():
 
     st.header("💬 智能问答")
 
-    if not st.session_state.username:
-        st.info("👈 请先在左侧边栏输入用户名")
+    if not st.session_state.get("logged_in"):
+        st.info("👈 请先在左侧边栏登录或注册")
         return
 
     st.caption("向 AI 导师组提问，三位专家为你解答《人工智能导论》相关问题")
