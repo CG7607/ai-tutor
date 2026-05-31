@@ -1,0 +1,1 @@
+"""Course knowledge graph module."""
