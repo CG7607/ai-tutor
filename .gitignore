@@ -21,3 +21,7 @@ env/
 dist/
 build/
 *.egg-info/
+.claude/
+.DS_Store
+aitutor/data/users/
+aitutor/.env
