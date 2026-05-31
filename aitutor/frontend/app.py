@@ -20,6 +20,7 @@ if page == "💬 智能问答":
     from aitutor.frontend.pages.chat import render_chat_page
     render_chat_page()
 elif page == "🕸️ 知识图谱":
-    st.info("知识图谱可视化即将上线...")
+    from aitutor.frontend.pages.knowledge_graph import render_kg_page
+    render_kg_page()
 elif page == "📝 自适应测验":
     st.info("自适应测验即将上线...")
