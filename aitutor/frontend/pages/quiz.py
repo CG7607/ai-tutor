@@ -63,31 +63,40 @@ def render_quiz_page():
     level = st.session_state.student_level
 
     # ============ 学习进度栏 ============
-    col_prog1, col_prog2, col_prog3, col_prog4, col_prog5 = st.columns(5)
-    with col_prog1:
+    c_total = len(history)
+    c_correct = sum(1 for h in history if h.get("correct")) if history else 0
+    c_rate = c_correct / c_total * 100 if c_total > 0 else 0
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
         st.metric("布鲁姆层次", f"L{level}")
-    with col_prog2:
-        st.metric("已答题数", len(history))
-    with col_prog3:
-        if history:
-            correct_count = sum(1 for h in history if h.get("correct"))
-            st.metric("准确率", f"{correct_count / len(history) * 100:.0f}%")
-        else:
-            st.metric("准确率", "—")
-    with col_prog4:
+    with col2:
+        st.metric("已答题数", c_total)
+    with col3:
+        st.metric("准确率", f"{c_rate:.0f}%" if c_total > 0 else "—")
+    with col4:
         st.metric("错题库", len(wrong))
-    with col_prog5:
-        if history:
-            c = sum(1 for h in history if h.get("correct"))
-            rate = c / len(history) * 100
-            if rate >= 80:
-                st.success("准备升级")
-            elif rate < 50:
-                st.warning("需巩固")
-            else:
-                st.info("继续加油")
+
+    # 状态徽章行
+    if c_total > 0:
+        if c_rate >= 80:
+            st.markdown(
+                "<span style='background:rgba(92,184,92,0.15);color:#5CB85C;"
+                "padding:4px 14px;border-radius:20px;font-size:0.82rem;font-weight:500;"
+                "border:1px solid rgba(92,184,92,0.3)'>▲ 准确率优秀，难度已提升</span>",
+                unsafe_allow_html=True)
+        elif c_rate < 50:
+            st.markdown(
+                "<span style='background:rgba(224,85,85,0.12);color:#E05555;"
+                "padding:4px 14px;border-radius:20px;font-size:0.82rem;font-weight:500;"
+                "border:1px solid rgba(224,85,85,0.3)'>▼ 需巩固基础，回到上一层次</span>",
+                unsafe_allow_html=True)
         else:
-            st.caption("等待答题")
+            st.markdown(
+                "<span style='background:rgba(91,155,213,0.12);color:#5B9BD5;"
+                "padding:4px 14px;border-radius:20px;font-size:0.82rem;font-weight:500;"
+                "border:1px solid rgba(91,155,213,0.3)'>● 稳步推进中</span>",
+                unsafe_allow_html=True)
 
     # ============ 操作栏 ============
     st.divider()

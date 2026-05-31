@@ -192,6 +192,19 @@ def render_chat_page():
         content: '删除文件';
         font-size: 0.85rem !important;
     }
+    /* 已上传文件数量/大小文字中文化 */
+    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] + div [data-testid="stText"] {
+        font-size: 0 !important;
+    }
+    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] + div [data-testid="stText"]::after {
+        content: '文件已就绪';
+        font-size: 0.82rem !important;
+        color: #F5A623;
+    }
+    /* 已上传文件的删除按钮旁边文字 */
+    [data-testid="stFileUploader"] span[data-testid="stText"] {
+        font-size: 0.85rem !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
