@@ -146,64 +146,63 @@ def render_chat_page():
                 st.caption(f"📎 已上传：{msg['file_name']}")
             st.markdown(msg["content"])
 
-    # ============ 输入区域 ============
-    # 文件上传——CSS 中文化
+    # ============ 文件上传 ============
+    # 隐藏原生组件，用自定义 UI
     st.markdown("""
     <style>
-    /* 文件上传器中文化 */
-    [data-testid="stFileUploader"] section small,
-    [data-testid="stFileUploader"] small {
+    /* 彻底隐藏 file_uploader 所有英文文本 */
+    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] * {
+        visibility: hidden !important;
+    }
+    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] {
+        border: 1px dashed #363840 !important;
+        border-radius: 10px !important;
+        background: #1E2026 !important;
+        padding: 1rem !important;
+        position: relative;
+        min-height: 48px;
+        display: flex; align-items: center; justify-content: flex-start;
+        gap: 0.6rem;
+    }
+    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"]::before {
+        content: '📎 拖拽文件到此处  |  支持 txt / pdf / py / md / json / csv 等格式';
+        visibility: visible !important;
+        color: #6B6A67; font-size: 0.82rem;
+        position: static;
+    }
+    /* 浏览按钮——强制显示中文 */
+    [data-testid="stFileUploader"] button {
+        visibility: visible !important;
+        border: 1px solid #363840 !important;
+        border-radius: 6px !important;
+        background: #252830 !important;
+        color: transparent !important;
         font-size: 0 !important;
-    }
-    [data-testid="stFileUploader"] section small::after {
-        content: '支持 txt、pdf、py、md、json、csv 等格式';
-        font-size: 0.8rem !important;
-        color: #6B6A67;
-    }
-    /* 拖拽区域提示 */
-    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] p {
-        visibility: hidden;
+        padding: 0.35rem 0.8rem !important;
         position: relative;
     }
-    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] p::after {
-        content: '拖拽文件到此处或点击浏览';
-        visibility: visible;
-        position: absolute; left: 0; top: 0;
-        width: 100%; text-align: center;
-        color: #9B9A96;
-    }
-    /* 浏览按钮 */
-    [data-testid="stFileUploader"] button {
-        font-size: 0 !important;
-    }
-    [data-testid="stFileUploader"] button::after {
+    [data-testid="stFileUploader"] button::before {
         content: '浏览文件';
-        font-size: 0.88rem !important;
+        visibility: visible !important;
+        color: #9B9A96 !important;
+        font-size: 0.82rem !important;
+        position: static;
     }
-    /* 已上传文件名 */
-    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] + div span {
+    [data-testid="stFileUploader"] button:hover {
+        border-color: #F5A623 !important;
+        color: transparent !important;
+    }
+    [data-testid="stFileUploader"] button:hover::before {
         color: #F5A623 !important;
     }
-    /* 删除已上传文件按钮 */
-    [data-testid="stFileUploader"] button[kind="secondary"] {
-        font-size: 0 !important;
+    /* 已上传文件区域 */
+    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] + div {
+        background: #1E2026; border: 1px solid #363840;
+        border-radius: 6px; padding: 0.3rem 0.8rem;
     }
-    [data-testid="stFileUploader"] button[kind="secondary"]::after {
-        content: '删除文件';
-        font-size: 0.85rem !important;
-    }
-    /* 已上传文件数量/大小文字中文化 */
-    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] + div [data-testid="stText"] {
-        font-size: 0 !important;
-    }
-    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] + div [data-testid="stText"]::after {
-        content: '文件已就绪';
-        font-size: 0.82rem !important;
-        color: #F5A623;
-    }
-    /* 已上传文件的删除按钮旁边文字 */
-    [data-testid="stFileUploader"] span[data-testid="stText"] {
-        font-size: 0.85rem !important;
+    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] + div *,
+    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] + div span {
+        color: #F5A623 !important; font-size: 0.82rem !important;
     }
     </style>
     """, unsafe_allow_html=True)

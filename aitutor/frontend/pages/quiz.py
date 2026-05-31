@@ -102,7 +102,7 @@ def render_quiz_page():
     st.divider()
     col_op1, col_op2, _ = st.columns([1, 1, 2])
     with col_op1:
-        if history and st.button("🔄 重置全部进度", use_container_width=True):
+        if history and st.button("重置进度", use_container_width=True):
             st.session_state.quiz_history = []
             st.session_state.wrong_answers = []
             st.session_state.student_level = 1
@@ -113,7 +113,7 @@ def render_quiz_page():
             )
             st.rerun()
     with col_op2:
-        if wrong and st.button("🗑️ 清空错题库", use_container_width=True):
+        if wrong and st.button("清空错题库", use_container_width=True):
             st.session_state.wrong_answers = []
             保存用户数据(
                 st.session_state.username, st.session_state.chat_history,
@@ -135,11 +135,8 @@ def render_quiz_page():
     st.divider()
 
     # ============ 出题区域 ============
-    col_topic, col_btn = st.columns([3, 1])
-    with col_topic:
-        topic = st.selectbox("选择知识点", 知识点列表, key="topic_select")
-    with col_btn:
-        if st.button("🎲 生成题目", type="primary", use_container_width=True):
+    topic = st.selectbox("选择知识点", 知识点列表, key="topic_select")
+    if st.button("生成题目", type="primary", use_container_width=True):
             with st.spinner("正在生成题目…"):
                 try:
                     response = requests.post(
@@ -240,7 +237,7 @@ def render_quiz_page():
 
             # 下一题按钮
             st.divider()
-            if st.button("➡️ 生成下一题", type="primary", use_container_width=True):
+            if st.button("生成下一题", type="primary", use_container_width=True):
                 with st.spinner("正在生成新题目…"):
                     try:
                         response = requests.post(
