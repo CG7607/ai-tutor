@@ -91,7 +91,7 @@ class RouterAgent:
 
         return {
             "agent_used": result.agent_name,
-            "agent_display": result.display_name,
+            "agent_display": result.agent_display,
             "router_analysis": {
                 "primary_agent": decision.primary_agent,
                 "sub_questions": decision.sub_questions,
