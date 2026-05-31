@@ -100,14 +100,9 @@ def render_quiz_page():
 
     # ============ 操作栏 ============
     st.divider()
-    col_btn, col_reset = st.columns([1, 1])
-    with col_btn:
-        btn_label = f"📌 进入错题库（共 {len(wrong)} 题）" if wrong else "📌 进入错题库"
-        if st.button(btn_label, type="primary", use_container_width=True):
-            st.session_state.page = "错题库"
-            st.rerun()
-    with col_reset:
-        if history and st.button("🔄 重置进度", use_container_width=True):
+    col_op1, col_op2, _ = st.columns([1, 1, 2])
+    with col_op1:
+        if history and st.button("重置进度", use_container_width=True):
             st.session_state.quiz_history = []
             st.session_state.wrong_answers = []
             st.session_state.student_level = 1
@@ -115,6 +110,14 @@ def render_quiz_page():
             st.session_state.show_feedback = False
             保存用户数据(
                 st.session_state.username, st.session_state.chat_history, [], []
+            )
+            st.rerun()
+    with col_op2:
+        if wrong and st.button("清空错题库", use_container_width=True):
+            st.session_state.wrong_answers = []
+            保存用户数据(
+                st.session_state.username, st.session_state.chat_history,
+                st.session_state.quiz_history, [],
             )
             st.rerun()
 
