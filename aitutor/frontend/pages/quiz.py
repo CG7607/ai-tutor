@@ -1,4 +1,4 @@
-"""自适应测验页面——布鲁姆认知层次 + 错题库 + 下一题."""
+"""自适应测验页面——布鲁姆认知层次 + 下一题."""
 import streamlit as st
 import requests
 from datetime import datetime
@@ -57,12 +57,6 @@ def render_quiz_page():
         st.session_state.show_feedback = False
     if "last_correct" not in st.session_state:
         st.session_state.last_correct = False
-    if "show_wrong_dialog" not in st.session_state:
-        st.session_state.show_wrong_dialog = False
-    if "wrong_page_num" not in st.session_state:
-        st.session_state.wrong_page_num = 1
-    if "confirm_clear" not in st.session_state:
-        st.session_state.confirm_clear = False
 
     history = st.session_state.quiz_history
     wrong = st.session_state.wrong_answers
@@ -106,9 +100,14 @@ def render_quiz_page():
 
     # ============ 操作栏 ============
     st.divider()
-    col_op1, col_op2, _ = st.columns([1, 1, 2])
-    with col_op1:
-        if history and st.button("重置进度", use_container_width=True):
+    col_btn, col_reset = st.columns([1, 1])
+    with col_btn:
+        btn_label = f"📌 进入错题库（共 {len(wrong)} 题）" if wrong else "📌 进入错题库"
+        if st.button(btn_label, type="primary", use_container_width=True):
+            st.session_state.page = "错题库"
+            st.rerun()
+    with col_reset:
+        if history and st.button("🔄 重置进度", use_container_width=True):
             st.session_state.quiz_history = []
             st.session_state.wrong_answers = []
             st.session_state.student_level = 1
@@ -118,28 +117,7 @@ def render_quiz_page():
                 st.session_state.username, st.session_state.chat_history, [], []
             )
             st.rerun()
-    with col_op2:
-        if wrong and st.button("清空错题库", use_container_width=True):
-            st.session_state.wrong_answers = []
-            保存用户数据(
-                st.session_state.username, st.session_state.chat_history,
-                st.session_state.quiz_history, [],
-            )
-            st.rerun()
 
-    # ============ 错题库按钮 ============
-    st.divider()
-    col_btn, _ = st.columns([1, 3])
-    with col_btn:
-        btn_label = f"📌 错题库（共 {len(wrong)} 题）" if wrong else "📌 错题库（空）"
-        btn_type = "primary" if wrong else "secondary"
-        if st.button(btn_label, type=btn_type, use_container_width=True,
-                     disabled=len(wrong) == 0):
-            st.session_state.show_wrong_dialog = True
-
-    # ============ 错题库弹窗 ============
-    if st.session_state.get("show_wrong_dialog"):
-        _render_wrong_answer_dialog(wrong)
     st.divider()
 
     # ============ 出题区域 ============
@@ -267,111 +245,3 @@ def render_quiz_page():
                         st.error("⚠️ 无法连接到后端。")
                     except requests.exceptions.Timeout:
                         st.error("⏰ 生成超时，请重试。")
-
-
-# ============ 错题库弹窗 ============
-@st.dialog("错题库", width="large")
-def _render_wrong_answer_dialog(wrong: list):
-    """独立弹窗：分页展示全部错题，支持逐条删除和清空."""
-    if not wrong:
-        st.info("🎉 错题库为空，继续保持！")
-        if st.button("关闭", use_container_width=True):
-            st.session_state.show_wrong_dialog = False
-            st.rerun()
-        return
-
-    PAGE_SIZE = 10
-    total_pages = max(1, (len(wrong) + PAGE_SIZE - 1) // PAGE_SIZE)
-
-    # 分页状态
-    if "wrong_page_num" not in st.session_state:
-        st.session_state.wrong_page_num = 1
-    current_page = st.session_state.wrong_page_num
-    if current_page > total_pages:
-        current_page = total_pages
-        st.session_state.wrong_page_num = current_page
-
-    start_idx = (current_page - 1) * PAGE_SIZE
-    end_idx = min(start_idx + PAGE_SIZE, len(wrong))
-    page_items = list(enumerate(wrong[start_idx:end_idx], start=start_idx + 1))
-
-    # ---- 顶栏：统计 + 清空 ----
-    col_info, col_clear = st.columns([3, 1])
-    with col_info:
-        st.caption(f"共 {len(wrong)} 道错题　|　第 {current_page}/{total_pages} 页")
-    with col_clear:
-        if st.button("🗑 清空全部", type="secondary", use_container_width=True):
-            st.session_state.confirm_clear = True
-
-    # 二次确认清空
-    if st.session_state.get("confirm_clear"):
-        st.warning("⚠️ 确定要清空全部错题吗？此操作不可恢复。")
-        col_y, col_n = st.columns(2)
-        with col_y:
-            if st.button("✅ 确认清空", type="primary", use_container_width=True):
-                st.session_state.wrong_answers = []
-                st.session_state.confirm_clear = False
-                st.session_state.wrong_page_num = 1
-                st.session_state.show_wrong_dialog = False
-                保存用户数据(
-                    st.session_state.username, st.session_state.chat_history,
-                    st.session_state.quiz_history, [],
-                )
-                st.rerun()
-        with col_n:
-            if st.button("❌ 取消", use_container_width=True):
-                st.session_state.confirm_clear = False
-                st.rerun()
-
-    st.divider()
-
-    # ---- 题目列表 ----
-    for num, wa in page_items:
-        q_text = wa.get("question", "")
-        if len(q_text) > 60:
-            q_text = q_text[:60] + "…"
-
-        with st.expander(f"错题 {num}　·　{wa.get('topic', '未知')}　·　{q_text}", expanded=False):
-            col_a, col_del = st.columns([5, 1])
-            with col_a:
-                st.caption(
-                    f"你的答案：{wa.get('user_answer', '无')}　｜　"
-                    f"正确答案：{wa.get('correct_answer', '无')}"
-                )
-                if wa.get("explanation"):
-                    st.markdown(wa.get("explanation"))
-            with col_del:
-                if st.button("🗑", key=f"del_wrong_{num}", help="删除此条"):
-                    actual_idx = num - 1  # 转为 0-based
-                    if 0 <= actual_idx < len(st.session_state.wrong_answers):
-                        st.session_state.wrong_answers.pop(actual_idx)
-                        保存用户数据(
-                            st.session_state.username, st.session_state.chat_history,
-                            st.session_state.quiz_history, st.session_state.wrong_answers,
-                        )
-                        st.session_state.wrong_page_num = min(current_page, max(1, total_pages - 1))
-                        st.rerun()
-
-    st.divider()
-
-    # ---- 底部分页导航 ----
-    col_prev, col_page, col_next = st.columns([1, 2, 1])
-    with col_prev:
-        if st.button("← 上一页", disabled=(current_page <= 1), use_container_width=True):
-            st.session_state.wrong_page_num = current_page - 1
-            st.rerun()
-    with col_page:
-        st.caption(f"第 {current_page} / {total_pages} 页", unsafe_allow_html=False)
-    with col_next:
-        if st.button("下一页 →", disabled=(current_page >= total_pages), use_container_width=True):
-            st.session_state.wrong_page_num = current_page + 1
-            st.rerun()
-
-    st.divider()
-
-    # ---- 关闭按钮 ----
-    if st.button("关闭错题库", type="primary", use_container_width=True):
-        st.session_state.show_wrong_dialog = False
-        st.session_state.wrong_page_num = 1
-        st.session_state.confirm_clear = False
-        st.rerun()

@@ -35,6 +35,8 @@ with st.sidebar:
         st.session_state.wrong_answers = []
     if "student_level" not in st.session_state:
         st.session_state.student_level = 1
+    if "page" not in st.session_state:
+        st.session_state.page = "问答"
 
     # ---------- 已登录 ----------
     if st.session_state.logged_in:
@@ -64,8 +66,9 @@ with st.sidebar:
         st.subheader("导航")
         page = st.radio(
             "选择模块",
-            ["问答", "图谱", "测验"],
+            ["问答", "图谱", "测验", "错题库"],
             label_visibility="collapsed",
+            key="page",
         )
 
     # ---------- 未登录 ----------
@@ -132,8 +135,9 @@ with st.sidebar:
         st.subheader("导航")
         page = st.radio(
             "选择模块",
-            ["问答", "图谱", "测验"],
+            ["问答", "图谱", "测验", "错题库"],
             label_visibility="collapsed",
+            key="page",
         )
 
 
@@ -147,3 +151,6 @@ elif page == "图谱":
 elif page == "测验":
     from aitutor.frontend.pages.quiz import render_quiz_page
     render_quiz_page()
+elif page == "错题库":
+    from aitutor.frontend.pages.wrong_answers import render_wrong_answers_page
+    render_wrong_answers_page()
