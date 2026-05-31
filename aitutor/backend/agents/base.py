@@ -1,6 +1,6 @@
 """Base class for specialist agents."""
 from dataclasses import dataclass, field
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from aitutor.backend.llm.client import chat_completion
 
@@ -29,7 +29,6 @@ class AgentBase(ABC):
     display_name: str = "Base Agent"
     system_prompt: str = ""
 
-    @abstractmethod
     async def respond(self, message: str, history: list[dict] | None = None) -> AgentResult:
         """Generate a response to the user's message.
 
