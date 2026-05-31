@@ -147,9 +147,56 @@ def render_chat_page():
             st.markdown(msg["content"])
 
     # ============ 输入区域 ============
-    # 文件上传
+    # 文件上传——CSS 中文化
+    st.markdown("""
+    <style>
+    /* 文件上传器中文化 */
+    [data-testid="stFileUploader"] section small,
+    [data-testid="stFileUploader"] small {
+        font-size: 0 !important;
+    }
+    [data-testid="stFileUploader"] section small::after {
+        content: '支持 txt、pdf、py、md、json、csv 等格式';
+        font-size: 0.8rem !important;
+        color: #6B6A67;
+    }
+    /* 拖拽区域提示 */
+    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] p {
+        visibility: hidden;
+        position: relative;
+    }
+    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] p::after {
+        content: '拖拽文件到此处或点击浏览';
+        visibility: visible;
+        position: absolute; left: 0; top: 0;
+        width: 100%; text-align: center;
+        color: #9B9A96;
+    }
+    /* 浏览按钮 */
+    [data-testid="stFileUploader"] button {
+        font-size: 0 !important;
+    }
+    [data-testid="stFileUploader"] button::after {
+        content: '浏览文件';
+        font-size: 0.88rem !important;
+    }
+    /* 已上传文件名 */
+    [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] + div span {
+        color: #F5A623 !important;
+    }
+    /* 删除已上传文件按钮 */
+    [data-testid="stFileUploader"] button[kind="secondary"] {
+        font-size: 0 !important;
+    }
+    [data-testid="stFileUploader"] button[kind="secondary"]::after {
+        content: '删除文件';
+        font-size: 0.85rem !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     uploaded_file = st.file_uploader(
-        "上传文件（可选）",
+        "上传文件",
         type=["txt", "md", "py", "pdf", "json", "csv", "c", "cpp", "java", "js", "html", "css", "sh", "sql", "tex"],
         key="file_uploader",
         label_visibility="collapsed",
