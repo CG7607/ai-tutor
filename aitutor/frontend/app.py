@@ -17,7 +17,8 @@ page = st.sidebar.radio(
 )
 
 if page == "💬 智能问答":
-    st.info("聊天界面即将上线...")
+    from aitutor.frontend.pages.chat import render_chat_page
+    render_chat_page()
 elif page == "🕸️ 知识图谱":
     st.info("知识图谱可视化即将上线...")
 elif page == "📝 自适应测验":
