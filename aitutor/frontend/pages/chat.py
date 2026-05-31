@@ -2,7 +2,7 @@
 import streamlit as st
 import requests
 
-from aitutor.frontend.app import save_user_data
+from aitutor.frontend.user_data import 保存用户数据
 
 BACKEND_URL = "http://localhost:8000"
 
@@ -102,7 +102,7 @@ def render_chat_page():
                         })
 
                         # 持久化
-                        save_user_data(
+                        保存用户数据(
                             st.session_state.username,
                             st.session_state.chat_history,
                             st.session_state.quiz_history,

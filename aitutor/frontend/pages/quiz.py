@@ -4,7 +4,7 @@ import requests
 from datetime import datetime
 
 from aitutor.frontend.components.quiz_card import render_quiz_card, render_feedback
-from aitutor.frontend.app import save_user_data
+from aitutor.frontend.user_data import 保存用户数据
 
 BACKEND_URL = "http://localhost:8000"
 
@@ -99,14 +99,14 @@ def render_quiz_page():
                 st.session_state.student_level = 1
                 st.session_state.current_question = None
                 st.session_state.show_feedback = False
-                save_user_data(
+                保存用户数据(
                     st.session_state.username, st.session_state.chat_history, [], []
                 )
                 st.rerun()
         with col_op2:
             if wrong and st.button("🗑️ 清空错题库", use_container_width=True):
                 st.session_state.wrong_answers = []
-                save_user_data(
+                保存用户数据(
                     st.session_state.username, st.session_state.chat_history,
                     st.session_state.quiz_history, [],
                 )
@@ -212,7 +212,7 @@ def render_quiz_page():
                 st.session_state.student_level = max(1, st.session_state.student_level - 1)
 
             # 持久化
-            save_user_data(
+            保存用户数据(
                 st.session_state.username,
                 st.session_state.chat_history,
                 st.session_state.quiz_history,
