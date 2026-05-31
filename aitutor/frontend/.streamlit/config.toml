@@ -1,3 +1,10 @@
 [client]
-# 隐藏 Streamlit 默认的英文页面导航，使用我们自己的中文导航
 showSidebarNavigation = false
+
+[theme]
+base = "dark"
+primaryColor = "#F5A623"
+backgroundColor = "#1A1D23"
+secondaryBackgroundColor = "#252830"
+textColor = "#E8E6E3"
+font = "monospace"

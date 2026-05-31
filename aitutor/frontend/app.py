@@ -11,6 +11,10 @@ st.set_page_config(
     layout="wide",
 )
 
+# 注入自定义主题样式
+from aitutor.frontend.components.styles import 注入样式
+注入样式()
+
 # ============ 页面头部 ============
 st.title("🤖 AI导师")
 st.caption("基于多智能体协作的《人工智能导论》课程助教")
