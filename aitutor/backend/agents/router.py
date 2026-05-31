@@ -67,6 +67,15 @@ class RouterAgent:
             decision.primary_agent, self.concept_agent
         )
 
+        # Step 2.5: Inject knowledge graph context
+        if decision.knowledge_graph_nodes:
+            from aitutor.backend.knowledge_graph.query import kg_query
+
+            kg_context = kg_query.get_context_for_agent(
+                decision.knowledge_graph_nodes
+            )
+            agent.add_kg_context(kg_context)
+
         # Step 3: Generate response
         result: AgentResult = await agent.respond(message, history)
 
