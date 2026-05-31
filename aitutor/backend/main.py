@@ -2,6 +2,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from aitutor.backend.api.chat import ChatRequest, ChatResponse, handle_chat
+
 app = FastAPI(
     title="AITutor API",
     description="基于多智能体协作的《人工智能导论》课程助教",
@@ -20,3 +22,12 @@ app.add_middleware(
 @app.get("/api/health")
 async def health_check():
     return {"status": "ok", "service": "aitutor"}
+
+
+@app.post("/api/chat", response_model=ChatResponse)
+async def chat_endpoint(request: ChatRequest):
+    """多智能体协作问答接口。
+
+    学生提问后，Router 自动分类并调度合适的专家 Agent 回答。
+    """
+    return await handle_chat(request)
