@@ -13,6 +13,14 @@ from aitutor.backend.api.kg import (
     get_neighborhood,
     get_full_graph,
 )
+from aitutor.backend.api.quiz import (
+    QuizRequest,
+    QuizSubmitRequest,
+    QuizResponse,
+    QuizSubmitResponse,
+    generate_quiz_endpoint,
+    submit_quiz_endpoint,
+)
 
 app = FastAPI(
     title="AITutor API",
@@ -59,3 +67,15 @@ async def kg_neighborhood(request: KGNodeRequest):
 async def kg_full():
     """获取完整知识图谱数据（用于可视化）。"""
     return await get_full_graph()
+
+
+@app.post("/api/quiz/generate", response_model=QuizResponse)
+async def quiz_generate(request: QuizRequest):
+    """生成自适应测验题目。"""
+    return await generate_quiz_endpoint(request)
+
+
+@app.post("/api/quiz/submit", response_model=QuizSubmitResponse)
+async def quiz_submit(request: QuizSubmitRequest):
+    """提交测验答案。"""
+    return await submit_quiz_endpoint(request)
