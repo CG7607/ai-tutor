@@ -1,4 +1,5 @@
 """AI导师入口——基于多智能体协作的《人工智能导论》课程助教."""
+import uuid
 import streamlit as st
 
 from aitutor.frontend.user_data import (
@@ -84,6 +85,10 @@ with st.sidebar:
                     st.session_state.wrong_answers = d["wrong_answers"]
                     st.session_state.current_question = None
                     st.session_state.show_feedback = False
+                    # 每次登录开启新对话
+                    st.session_state.active_conv_id = str(uuid.uuid4())
+                    st.session_state.conv_title = ""
+                    st.session_state.messages = []
                     st.rerun()
 
         with 注册页:
@@ -110,6 +115,9 @@ with st.sidebar:
                     st.session_state.quiz_history = d["quiz_history"]
                     st.session_state.wrong_answers = d["wrong_answers"]
                     st.session_state.current_question = None
+                    st.session_state.active_conv_id = str(uuid.uuid4())
+                    st.session_state.conv_title = ""
+                    st.session_state.messages = []
                     st.rerun()
 
         st.divider()
