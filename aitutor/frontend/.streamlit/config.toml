@@ -1,0 +1,3 @@
+[client]
+# 隐藏 Streamlit 默认的英文页面导航，使用我们自己的中文导航
+showSidebarNavigation = false
