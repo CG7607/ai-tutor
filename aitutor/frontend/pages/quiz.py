@@ -90,38 +90,38 @@ def render_quiz_page():
             st.caption("等待答题")
 
     # ============ 操作栏 ============
-    with st.expander("🛠️ 操作与错题库", expanded=False):
-        col_op1, col_op2 = st.columns(2)
-        with col_op1:
-            if history and st.button("🔄 重置全部进度", use_container_width=True):
-                st.session_state.quiz_history = []
-                st.session_state.wrong_answers = []
-                st.session_state.student_level = 1
-                st.session_state.current_question = None
-                st.session_state.show_feedback = False
-                保存用户数据(
-                    st.session_state.username, st.session_state.chat_history, [], []
-                )
-                st.rerun()
-        with col_op2:
-            if wrong and st.button("🗑️ 清空错题库", use_container_width=True):
-                st.session_state.wrong_answers = []
-                保存用户数据(
-                    st.session_state.username, st.session_state.chat_history,
-                    st.session_state.quiz_history, [],
-                )
-                st.rerun()
+    st.divider()
+    col_op1, col_op2, _ = st.columns([1, 1, 2])
+    with col_op1:
+        if history and st.button("🔄 重置全部进度", use_container_width=True):
+            st.session_state.quiz_history = []
+            st.session_state.wrong_answers = []
+            st.session_state.student_level = 1
+            st.session_state.current_question = None
+            st.session_state.show_feedback = False
+            保存用户数据(
+                st.session_state.username, st.session_state.chat_history, [], []
+            )
+            st.rerun()
+    with col_op2:
+        if wrong and st.button("🗑️ 清空错题库", use_container_width=True):
+            st.session_state.wrong_answers = []
+            保存用户数据(
+                st.session_state.username, st.session_state.chat_history,
+                st.session_state.quiz_history, [],
+            )
+            st.rerun()
 
-        # 错题本
-        if wrong:
-            st.divider()
-            st.subheader(f"📌 错题库（共 {len(wrong)} 题）")
-            for i, wa in enumerate(reversed(wrong[-10:])):
-                idx = len(wrong) - min(len(wrong), 10) + i + 1
-                with st.expander(f"错题 {idx}：{wa.get('question', '')[:40]}…", expanded=False):
-                    st.caption(f"知识点：{wa.get('topic', '')}　|　你的答案：{wa.get('user_answer', '')}")
-                    st.markdown(f"**正确答案：{wa.get('correct_answer', '')}**")
-                    st.markdown(wa.get("explanation", ""))
+    # 错题本（直接展开，不包在 expander 里）
+    if wrong:
+        st.divider()
+        st.subheader(f"📌 错题库（共 {len(wrong)} 题）")
+        for i, wa in enumerate(reversed(wrong[-10:])):
+            idx = len(wrong) - min(len(wrong), 10) + i + 1
+            with st.expander(f"错题 {idx}：{wa.get('question', '')[:40]}…", expanded=False):
+                st.caption(f"知识点：{wa.get('topic', '')}　|　你的答案：{wa.get('user_answer', '')}")
+                st.markdown(f"**正确答案：{wa.get('correct_answer', '')}**")
+                st.markdown(wa.get("explanation", ""))
 
     st.divider()
 
