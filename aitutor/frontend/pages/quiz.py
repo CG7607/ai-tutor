@@ -36,7 +36,7 @@ def _判断对错(用户选择: str, 正确答案: str) -> bool:
 
 def render_quiz_page():
     """渲染自适应测验页面."""
-    st.header("📝 自适应测验")
+    st.header("自适应测验")
 
     if not st.session_state.get("logged_in"):
         st.info("👈 请先在左侧边栏登录或注册")

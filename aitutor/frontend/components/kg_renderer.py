@@ -211,7 +211,7 @@ def render_kg_html(nodes: list[dict], edges: list[dict]) -> str:
 
 def render_kg_page():
     """渲染知识图谱探索页面."""
-    st.header("🕸️ 知识图谱")
+    st.header("知识图谱")
 
     col1, col2 = st.columns([1.2, 3])
 

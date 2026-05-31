@@ -17,7 +17,7 @@ def render_chat_page():
     """渲染智能问答页面."""
     from aitutor.frontend.components.agent_badge import render_agent_badge
 
-    st.header("💬 智能问答")
+    st.header("智能问答")
 
     if not st.session_state.get("logged_in"):
         st.info("👈 请先在左侧边栏登录或注册")

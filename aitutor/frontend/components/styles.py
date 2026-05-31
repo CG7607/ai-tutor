@@ -100,29 +100,33 @@ def 注入样式():
         color: var(--text-muted); text-transform: uppercase;
     }
 
-    /* 导航菜单——极简轻盈 */
+    /* 导航菜单——间距分明 + 分割线 */
     [data-testid="stSidebar"] .stRadio > div[role="radiogroup"] {
-        display: flex; flex-direction: column; gap: 2px;
+        display: flex; flex-direction: column; gap: 10px;
+        padding: 4px 0;
     }
     [data-testid="stSidebar"] .stRadio label {
-        padding: 0.45rem 0.6rem !important; margin: 0 !important;
-        border-radius: 6px !important; font-size: 0.88rem;
+        padding: 0.55rem 0.8rem !important; margin: 0 !important;
+        border-radius: 8px !important; font-size: 0.9rem;
         color: var(--text-secondary) !important;
-        transition: all var(--transition); border: none;
-        font-weight: 400;
+        transition: all 0.25s cubic-bezier(0.4,0,0.2,1); border: none;
+        font-weight: 450; letter-spacing: 0.04em;
+        position: relative;
     }
     [data-testid="stSidebar"] .stRadio label:hover {
-        background: transparent !important; color: var(--text-primary) !important;
+        background: var(--bg-card) !important; color: var(--text-primary) !important;
+        transform: translateX(3px);
     }
     [data-testid="stSidebar"] .stRadio label:has(input:checked) {
-        background: transparent !important; border: none !important;
-        box-shadow: none !important;
+        background: var(--amber-soft) !important; border: 1px solid var(--amber) !important;
+        box-shadow: 0 0 16px var(--amber-glow) !important;
         color: var(--amber) !important; font-weight: 600;
+        transform: translateX(3px);
     }
-    /* 选中态——左侧小圆点指示器 */
+    /* 选中态左侧竖线 */
     [data-testid="stSidebar"] .stRadio label:has(input:checked)::before {
-        content: '●'; font-size: 0.5rem; margin-right: 0.35rem;
-        color: var(--amber); vertical-align: middle;
+        content: ''; position: absolute; left: 0; top: 20%; height: 60%;
+        width: 3px; background: var(--amber); border-radius: 2px;
     }
 
     /* ============ 标签页 (登录/注册) ============ */
@@ -268,5 +272,50 @@ def 注入样式():
         h1 { font-size: 1.5rem !important; }
         [data-testid="stMetric"] [data-testid="stMetricValue"] { font-size: 1.2rem !important; }
         .main .block-container { padding: 1rem; }
+    }
+
+    /* ============ 页面入场动画 ============ */
+    @keyframes pageSlideIn {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .main .block-container > div:first-child {
+        animation: pageSlideIn 0.4s ease;
+    }
+
+    /* 标题呼吸光 */
+    @keyframes titleGlow {
+        0%, 100% { border-color: var(--amber); }
+        50%      { border-color: var(--amber-bright); }
+    }
+    h1 { animation: titleGlow 3s ease-in-out infinite; }
+
+    /* 卡片悬停上浮 */
+    .stChatMessage, [data-testid="stMetric"], .streamlit-expanderHeader {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .stChatMessage:hover, [data-testid="stMetric"]:hover {
+        transform: translateY(-2px);
+    }
+
+    /* 主按钮脉冲 */
+    @keyframes btnPulse {
+        0%, 100% { box-shadow: 0 0 0 0 var(--amber-glow); }
+        50%      { box-shadow: 0 0 0 8px transparent; }
+    }
+    .stButton > button[kind="primary"] {
+        animation: btnPulse 2.5s ease-in-out infinite;
+    }
+
+    /* ============ 知识图谱——去除白边 ============ */
+    iframe {
+        border: none !important;
+        border-radius: var(--radius-lg);
+        background: #1A1D23;
+    }
+    [data-testid="stIFrame"] {
+        border: none !important;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
     }
     </style>""", unsafe_allow_html=True)
