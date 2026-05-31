@@ -23,4 +23,5 @@ elif page == "🕸️ 知识图谱":
     from aitutor.frontend.pages.knowledge_graph import render_kg_page
     render_kg_page()
 elif page == "📝 自适应测验":
-    st.info("自适应测验即将上线...")
+    from aitutor.frontend.pages.quiz import render_quiz_page
+    render_quiz_page()
