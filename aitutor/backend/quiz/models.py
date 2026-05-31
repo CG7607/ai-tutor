@@ -16,6 +16,7 @@ class QuizSubmitRequest(BaseModel):
 
 class QuizResponse(BaseModel):
     question_id: str
+    topic: str  # 知识点，方便前端记录
     question: str
     options: list[str] | None = None  # None for open-ended questions
     question_type: str  # "single_choice", "multi_choice", "short_answer", "open"

@@ -112,11 +112,12 @@ def render_quiz_page():
         if answer is not None and not st.session_state.show_feedback:
             correct = answer == q["answer"]
             st.session_state.show_feedback = True
+            st.session_state.last_correct = correct  # 保存结果，供重渲染后使用
 
-            # Record in history
+            # Record in history (使用生成题目时的 topic，防止切换)
             st.session_state.quiz_history.append({
                 "question_id": q["question_id"],
-                "topic": topic,
+                "topic": q.get("topic", topic),
                 "correct": correct,
                 "bloom_level": q["bloom_level"],
             })
@@ -131,4 +132,8 @@ def render_quiz_page():
             st.rerun()
 
         elif st.session_state.show_feedback and q:
-            render_feedback(True, q["answer"], q["explanation"])
+            render_feedback(
+                st.session_state.get("last_correct", False),
+                q["answer"],
+                q["explanation"],
+            )

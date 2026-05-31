@@ -127,6 +127,7 @@ async def generate_quiz(
 
     return QuizResponse(
         question_id=f"q_{uuid.uuid4().hex[:8]}",
+        topic=topic,
         question=raw["question"],
         options=raw.get("options"),
         question_type=raw.get("question_type", "single_choice"),

@@ -1,7 +1,6 @@
 """Chat interface page — main Q&A interaction with multi-agent system."""
 import streamlit as st
 import requests
-import json
 
 BACKEND_URL = "http://localhost:8000"
 
@@ -50,7 +49,7 @@ def render_chat_page():
                             "message": prompt,
                             "history": [
                                 {"role": m["role"], "content": m["content"]}
-                                for m in st.session_state.messages[-6:]
+                                for m in st.session_state.messages[-7:-1]  # 排除刚加的用户消息
                             ],
                         },
                         timeout=60,
