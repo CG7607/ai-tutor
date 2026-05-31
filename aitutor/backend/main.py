@@ -12,6 +12,9 @@ from aitutor.backend.api.kg import (
     search_kg,
     get_neighborhood,
     get_full_graph,
+    KGDetailRequest,
+    KGDetailResponse,
+    get_concept_detail,
 )
 from aitutor.backend.api.quiz import (
     QuizRequest,
@@ -73,6 +76,12 @@ async def kg_full():
 async def quiz_generate(request: QuizRequest):
     """生成自适应测验题目。"""
     return await generate_quiz_endpoint(request)
+
+
+@app.post("/api/kg/detail", response_model=KGDetailResponse)
+async def kg_detail(request: KGDetailRequest):
+    """获取概念的深度解读——LLM 生成核心思想/数学基础/历史/误区/应用."""
+    return await get_concept_detail(request)
 
 
 @app.post("/api/quiz/submit", response_model=QuizSubmitResponse)

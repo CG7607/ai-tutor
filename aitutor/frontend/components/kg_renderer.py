@@ -251,11 +251,12 @@ def render_kg_page():
             except requests.exceptions.ConnectionError:
                 st.error("⚠️ 无法连接到后端")
 
-        # 显示选中节点的邻域详情
+        # 显示选中节点的深度解读
         if "kg_selected" in st.session_state and st.session_state.kg_selected:
             node_id = st.session_state.kg_selected
             st.divider()
-            st.subheader("📌 节点详情")
+
+            # 先获取图谱数据
             try:
                 resp = requests.post(
                     f"{BACKEND_URL}/api/kg/neighborhood",
@@ -264,27 +265,80 @@ def render_kg_page():
                 if resp.status_code == 200:
                     data = resp.json()
                     center = data.get("center") or {}
+                    neighbors = data.get("neighbors", [])
+                    neighbor_names = [n["entity"].get("name", "") for n in neighbors]
+
                     if center:
+                        concept_name = center.get("name", node_id)
                         etype = center.get("type", "Concept")
                         cname = 类型中文.get(etype, etype)
-                        st.markdown(f"### {center.get('name', node_id)}")
-                        st.caption(f"{cname} · {center.get('category', '')}")
-                        st.markdown(center.get("description", ""))
 
-                    if data.get("neighbors"):
-                        st.caption("关联节点：")
-                        for nb in data["neighbors"]:
-                            e = nb["entity"]
-                            rel = 关系中文.get(nb["relation"], nb["relation"])
-                            st.markdown(
-                                f"<span style='font-size:0.8rem;color:#F5A623'>{rel}</span> "
-                                f"**{e.get('name', '')}**",
-                                unsafe_allow_html=True,
-                            )
-                            st.caption(e.get("description", "")[:80])
+                        st.markdown(f"### {concept_name}")
+                        st.caption(f"{cname} · {center.get('category', '')}")
+
+                        # 调用 LLM 生成深度解读
+                        with st.spinner("正在生成深度解读…"):
+                            try:
+                                detail_resp = requests.post(
+                                    f"{BACKEND_URL}/api/kg/detail",
+                                    json={
+                                        "concept_name": concept_name,
+                                        "concept_type": etype,
+                                        "concept_desc": center.get("description", ""),
+                                        "neighbor_names": neighbor_names,
+                                    },
+                                    timeout=60,
+                                )
+                                if detail_resp.status_code == 200:
+                                    d = detail_resp.json()
+
+                                    with st.expander("💡 核心思想", expanded=True):
+                                        st.markdown(d.get("core_idea", ""))
+
+                                    with st.expander("📐 数学基础"):
+                                        st.markdown(d.get("math_foundation", ""))
+
+                                    with st.expander("📜 历史背景"):
+                                        st.markdown(d.get("history", ""))
+
+                                    if d.get("key_insights"):
+                                        with st.expander("🔑 关键洞察"):
+                                            for ins in d["key_insights"]:
+                                                st.markdown(f"- {ins}")
+
+                                    if d.get("common_mistakes"):
+                                        with st.expander("⚠️ 常见误区"):
+                                            for mis in d["common_mistakes"]:
+                                                st.markdown(f"- {mis}")
+
+                                    with st.expander("🎯 应用场景"):
+                                        st.markdown(d.get("applications", ""))
+
+                                    with st.expander("📖 延伸学习"):
+                                        st.markdown(d.get("further_reading", ""))
+                                else:
+                                    st.warning("深度解读生成失败，请重试")
+                            except requests.exceptions.Timeout:
+                                st.warning("深度解读超时")
+                            except requests.exceptions.ConnectionError:
+                                st.warning("后端连接失败")
+
+                        # 关联概念
+                        if neighbors:
+                            st.divider()
+                            st.caption("关联概念：")
+                            for nb in neighbors:
+                                e = nb["entity"]
+                                rel = 关系中文.get(nb["relation"], nb["relation"])
+                                st.markdown(
+                                    f"<span style='font-size:0.8rem;color:#F5A623'>{rel}</span> "
+                                    f"**{e.get('name', '')}**",
+                                    unsafe_allow_html=True,
+                                )
             except requests.exceptions.ConnectionError:
                 st.error("⚠️ 无法连接到后端")
-            if st.button("✕ 清除选择"):
+
+            if st.button("✕ 关闭", use_container_width=True):
                 del st.session_state.kg_selected
                 st.rerun()
 

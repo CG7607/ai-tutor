@@ -1,0 +1,34 @@
+[
+  {
+    "question_id": "q_03940f56",
+    "topic": "反向传播",
+    "question": "在反向传播算法中，计算损失函数对网络参数的梯度时，其主要计算开销来源于以下哪一项？",
+    "correct": false,
+    "bloom_level": 1,
+    "timestamp": "2026-05-31T12:26:12.492157"
+  },
+  {
+    "question_id": "q_2769cba9",
+    "topic": "反向传播",
+    "question": "在反向传播的计算图中，以下哪个步骤是前向传播过程中必须执行的？",
+    "correct": true,
+    "bloom_level": 1,
+    "timestamp": "2026-05-31T12:26:34.971156"
+  },
+  {
+    "question_id": "q_3eda5797",
+    "topic": "损失函数",
+    "question": "在RetinaNet论文中提出的Focal Loss，其核心设计思想是为了解决目标检测中的什么问题？",
+    "correct": false,
+    "bloom_level": 1,
+    "timestamp": "2026-05-31T12:54:38.564470"
+  },
+  {
+    "question_id": "q_66f6ed19",
+    "topic": "损失函数",
+    "question": "Focal Loss中引入了一个调制因子 (1 - pt)^γ，其主要目的是：",
+    "correct": false,
+    "bloom_level": 1,
+    "timestamp": "2026-05-31T12:55:35.318828"
+  }
+]
