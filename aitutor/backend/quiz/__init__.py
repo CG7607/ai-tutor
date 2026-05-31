@@ -1,0 +1,1 @@
+"""Adaptive quiz generation module."""
