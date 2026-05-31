@@ -100,14 +100,14 @@ def 注入样式():
         color: var(--text-muted); text-transform: uppercase;
     }
 
-    /* 导航菜单——间距分明 + 分割线 */
+    /* 导航菜单——舒展修长 */
     [data-testid="stSidebar"] .stRadio > div[role="radiogroup"] {
-        display: flex; flex-direction: column; gap: 10px;
-        padding: 4px 0;
+        display: flex; flex-direction: column; gap: 12px;
+        padding: 6px 0;
     }
     [data-testid="stSidebar"] .stRadio label {
-        padding: 0.55rem 0.8rem !important; margin: 0 !important;
-        border-radius: 8px !important; font-size: 0.9rem;
+        padding: 0.7rem 0.9rem !important; margin: 0 !important;
+        border-radius: 8px !important; font-size: 0.92rem;
         color: var(--text-secondary) !important;
         transition: all 0.25s cubic-bezier(0.4,0,0.2,1); border: none;
         font-weight: 450; letter-spacing: 0.04em;
