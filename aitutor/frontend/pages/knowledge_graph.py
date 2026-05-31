@@ -1,4 +1,2 @@
-"""Knowledge graph page - re-exports the render function from kg_renderer."""
+"""知识图谱页面——从 kg_renderer 重新导出渲染函数."""
 from aitutor.frontend.components.kg_renderer import render_kg_page
-
-__all__ = ["render_kg_page"]
