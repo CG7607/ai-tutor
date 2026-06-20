@@ -1,8 +1,11 @@
 """LLM configuration from environment variables."""
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+# 从项目根目录加载 .env，不受工作目录影响
+_ENV_PATH = Path(__file__).resolve().parent.parent.parent / ".env"
+load_dotenv(_ENV_PATH)
 
 
 class LLMConfig:

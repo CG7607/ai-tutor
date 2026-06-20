@@ -7,3 +7,4 @@ networkx==3.4.2
 pyvis==0.3.2
 matplotlib==3.10.0
 python-dotenv==1.0.1
+watchdog==6.0.0

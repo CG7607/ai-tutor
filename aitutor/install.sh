@@ -1,16 +1,17 @@
 #!/bin/bash
 # ============================================================
 #  AITutor 一键安装脚本 (macOS / Linux)
-#  自动检测环境 → 创建虚拟环境 → 安装依赖 → 配置 API Key
+#  自动检测环境 → 创建虚拟环境 → 安装依赖 → 配置 API Key → 创建桌面 App
 # ============================================================
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 VENV_DIR="$SCRIPT_DIR/.venv"
 
 echo ""
 echo "╔══════════════════════════════════════════╗"
-echo "║   🤖 AI导师 安装程序 v2.1               ║"
+echo "║   🤖 AI导师 安装程序 v2.5               ║"
 echo "║   基于多智能体协作的 AI 课程助教          ║"
 echo "╚══════════════════════════════════════════╝"
 echo ""
@@ -32,9 +33,8 @@ for candidate in python3.11 python3.12 python3 python; do
 done
 
 if [ -z "$PYTHON" ]; then
-    echo "   ❌ 未找到 Python 3.11+，请先安装："
+    echo "   ❌ 未找到 Python 3.11+"
     echo "      macOS: brew install python@3.12"
-    echo "      官网:  https://www.python.org/downloads/"
     exit 1
 fi
 
@@ -47,17 +47,20 @@ else
     "$PYTHON" -m venv "$VENV_DIR"
     echo "   ✅ 虚拟环境创建完成。"
 fi
-
 source "$VENV_DIR/bin/activate"
 
 # ---- 3. 安装依赖 ----
 echo ""
 echo "📥 [3/5] 安装 Python 依赖..."
-if pip install -r "$SCRIPT_DIR/requirements.txt" --quiet; then
-    echo "   ✅ 依赖安装成功。"
+
+# 优先使用清华镜像（国内访问更快），失败则回退直连
+MIRROR="https://pypi.tuna.tsinghua.edu.cn/simple"
+if pip install -r "$SCRIPT_DIR/requirements.txt" -i "$MIRROR" --trusted-host pypi.tuna.tsinghua.edu.cn --quiet; then
+    echo "   ✅ 依赖安装成功（清华镜像）。"
+elif pip install -r "$SCRIPT_DIR/requirements.txt" --quiet; then
+    echo "   ✅ 依赖安装成功（直连）。"
 else
-    echo "   ❌ 依赖安装失败，请检查网络连接。"
-    echo "   你可以稍后手动运行：pip install -r requirements.txt"
+    echo "   ❌ 安装失败，请检查网络。"
     exit 1
 fi
 
@@ -65,67 +68,83 @@ fi
 echo ""
 echo "🔑 [4/5] 配置 LLM API Key..."
 if [ -f "$SCRIPT_DIR/.env" ]; then
-    echo "   ⚠️  .env 已存在，跳过配置。"
-    echo "   如需修改请直接编辑 aitutor/.env"
+    echo "   ⚠️  .env 已存在，跳过。"
 else
     cp "$SCRIPT_DIR/.env.example" "$SCRIPT_DIR/.env"
     echo ""
-    read -p "   请输入你的 API Key（回车跳过，稍后手动配置）: " api_key
+    read -p "   请输入 API Key（回车跳过）: " api_key
     if [ -n "$api_key" ]; then
-        # macOS 用 sed -i ''，Linux 用 sed -i
         if [[ "$OSTYPE" == "darwin"* ]]; then
             sed -i '' "s/your-api-key-here/$api_key/" "$SCRIPT_DIR/.env"
         else
             sed -i "s/your-api-key-here/$api_key/" "$SCRIPT_DIR/.env"
         fi
-        echo "   ✅ API Key 已写入 .env"
+        echo "   ✅ API Key 已写入"
     else
-        echo "   📝 已生成 .env 模板，请稍后编辑填入 API Key。"
+        echo "   📝 已生成模板，请稍后编辑 .env"
     fi
 fi
 
-# ---- 5. 生成桌面快捷方式 ----
+# ---- 5. 创建桌面启动 App ----
 echo ""
-echo "🔗 [5/5] 生成快捷启动方式..."
-DESKTOP_FILE="$HOME/Desktop/AITutor.command"
+echo "🔗 [5/5] 创建桌面一键启动..."
 
-cat > "$DESKTOP_FILE" << 'CMDEOF'
+DESKTOP_APP="$HOME/Desktop/AITutor.app"
+rm -rf "$DESKTOP_APP"
+rm -f "$HOME/Desktop/AITutor.command" 2>/dev/null
+
+# A. 创建 .command 备用启动器（右键 → 打开 可用，无权限要求）
+DESKTOP_CMD="$HOME/Desktop/AITutor.command"
+cat > "$DESKTOP_CMD" << COMMANDFILE
 #!/bin/bash
-cd "$(dirname "$0")"
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-# 找到 aitutor 目录
-AITUTOR_DIR=""
-for guess in \
-    "$SCRIPT_DIR/../aitutor" \
-    "$SCRIPT_DIR/../../Desktop/cc/aitutor" \
-    "$(dirname "$0")/aitutor"; do
-    if [ -f "$guess/run.sh" ]; then
-        AITUTOR_DIR="$guess"
-        break
-    fi
-done
-if [ -z "$AITUTOR_DIR" ]; then
-    echo "❌ 找不到 AITutor 安装目录，请手动运行 run.sh"
-    read -p "按回车退出..."
-    exit 1
-fi
-cd "$AITUTOR_DIR"
-source .venv/bin/activate 2>/dev/null || true
+clear
+echo ""
+echo "╔══════════════════════════════════════════╗"
+echo "║   🤖 AI导师 一键启动                    ║"
+echo "╚══════════════════════════════════════════╝"
+echo ""
+cd "$SCRIPT_DIR"
 bash run.sh
-CMDEOF
+COMMANDFILE
+chmod +x "$DESKTOP_CMD"
+xattr -cr "$DESKTOP_CMD" 2>/dev/null
 
-chmod +x "$DESKTOP_FILE"
-echo "   ✅ 桌面快捷方式已创建：$DESKTOP_FILE"
+# B. 创建 .app（AppleScript 方式，首次需允许自动化权限）
+if command -v osacompile &>/dev/null; then
+    osacompile -o "$DESKTOP_APP" \
+        -e "tell application \"Terminal\"
+            activate
+            do script \"clear; echo ''; echo '╔══════════════════════════════════════════╗'; echo '║   🤖 AI导师 一键启动                    ║'; echo '╚══════════════════════════════════════════╝'; echo ''; cd '$SCRIPT_DIR'; bash run.sh\"
+        end tell"
+
+    xattr -cr "$DESKTOP_APP" 2>/dev/null
+    codesign --force --sign - "$DESKTOP_APP" 2>/dev/null
+
+    echo "   ✅ $DESKTOP_APP"
+    echo "   ✅ $DESKTOP_CMD"
+else
+    echo "   ⚠️  osacompile 不可用，仅创建 .command"
+    echo "   ✅ $DESKTOP_CMD"
+fi
+
+echo ""
+echo "   ┌──────────────────────────────────────────┐"
+echo "   │  🚀 启动方式（任选其一）                  │"
+echo "   │                                          │"
+echo "   │  方式一：双击 AITutor.app                │"
+echo "   │    → 首次弹出权限框，点「允许」即可       │"
+echo "   │    → 如被拒绝：系统设置 → 隐私 → 自动化   │"
+echo "   │      找到 AITutor → 开启 Terminal ✅      │"
+echo "   │                                          │"
+echo "   │  方式二：右键 AITutor.command → 打开     │"
+echo "   │    → 直接启动，无需额外授权               │"
+echo "   └──────────────────────────────────────────┘"
 
 # ---- 完成 ----
 echo ""
 echo "╔══════════════════════════════════════════╗"
 echo "║   🎉 安装完成！                         ║"
-echo "║                                          ║"
-echo "║   启动方式：                             ║"
-echo "║   1. 双击桌面 AITutor.command           ║"
-echo "║   2. 终端运行：cd aitutor && bash run.sh ║"
-echo "║                                          ║"
-echo "║   浏览器打开 http://localhost:8501       ║"
+echo "║   双击 AITutor.app（首次需允许自动化） 🚀  ║"
+echo "║   或右键 AITutor.command → 打开（免授权） ║"
 echo "╚══════════════════════════════════════════╝"
 echo ""
